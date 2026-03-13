@@ -40,7 +40,17 @@ resource "aws_autoscaling_group" "weather_app_asg" {
     id      = aws_launch_template.weather_app_template.id
     version = "$Latest"
   }
+ 
+  instance_refresh {
+    strategy = "Rolling"
 
+    preferences {
+      min_healthy_percentage =  90
+      instance_warmup = 120
+    }
+    triggers = ["launch_template"]
+  }
+  
   target_group_arns          = [var.target_group]
   health_check_type          = "ELB"
   health_check_grace_period  = 60
